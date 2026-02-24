@@ -568,6 +568,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `
         }
+        <button class="share-button" data-activity="${name}">🔗 Share</button>
       </div>
     `;
 
@@ -586,6 +587,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    // Add click handler for share button
+    const shareButton = activityCard.querySelector(".share-button");
+    shareButton.addEventListener("click", () => {
+      shareActivity(name, details.description);
+    });
 
     activitiesList.appendChild(activityCard);
   }
@@ -797,6 +804,84 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     );
+  }
+
+  // Share activity function
+  function shareActivity(name, description) {
+    const pageUrl = window.location.origin + window.location.pathname;
+    const shareText = `Check out "${name}" at Mergington High School! ${description}`;
+
+    if (navigator.share) {
+      navigator.share({
+        title: `${name} - Mergington High School`,
+        text: shareText,
+        url: pageUrl,
+      }).catch((err) => {
+        if (err.name !== "AbortError") {
+          console.error("Error sharing:", err);
+        }
+      });
+    } else {
+      showSharePopup(name, shareText, pageUrl);
+    }
+  }
+
+  // Show share popup for browsers without native share support
+  function showSharePopup(name, shareText, pageUrl) {
+    const existingPopup = document.getElementById("share-popup");
+    if (existingPopup) {
+      existingPopup.remove();
+    }
+
+    const encodedText = encodeURIComponent(shareText);
+    const encodedUrl = encodeURIComponent(pageUrl);
+
+    const popup = document.createElement("div");
+    popup.id = "share-popup";
+    popup.className = "share-popup modal";
+    popup.innerHTML = `
+      <div class="modal-content share-popup-content">
+        <button class="close-share-popup close-modal">&#10005;</button>
+        <h3>Share Activity</h3>
+        <p class="share-activity-name">${name}</p>
+        <div class="share-options">
+          <a href="https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}"
+             target="_blank" rel="noopener noreferrer" class="share-option share-twitter">
+            𝕏 Post on X
+          </a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}"
+             target="_blank" rel="noopener noreferrer" class="share-option share-facebook">
+            Facebook
+          </a>
+          <button class="share-option share-copy">📋 Copy to Clipboard</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(popup);
+    setTimeout(() => popup.classList.add("show"), 10);
+
+    popup.querySelector(".close-share-popup").addEventListener("click", () => {
+      popup.classList.remove("show");
+      setTimeout(() => popup.remove(), 300);
+    });
+
+    popup.querySelector(".share-copy").addEventListener("click", () => {
+      navigator.clipboard.writeText(`${shareText}\n${pageUrl}`).then(() => {
+        showMessage("Activity details copied to clipboard!", "success");
+      }).catch(() => {
+        showMessage("Failed to copy to clipboard.", "error");
+      });
+      popup.classList.remove("show");
+      setTimeout(() => popup.remove(), 300);
+    });
+
+    popup.addEventListener("click", (event) => {
+      if (event.target === popup) {
+        popup.classList.remove("show");
+        setTimeout(() => popup.remove(), 300);
+      }
+    });
   }
 
   // Show message function
