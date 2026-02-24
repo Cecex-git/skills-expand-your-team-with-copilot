@@ -541,7 +541,8 @@ footer {
 
 .category-filters,
 .day-filters,
-.time-filters {
+.time-filters,
+.difficulty-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -549,7 +550,8 @@ footer {
 
 .category-filter,
 .day-filter,
-.time-filter {
+.time-filter,
+.difficulty-filter {
   background-color: var(--background);
   border: 1px solid var(--border);
   color: var(--text-primary);
@@ -562,7 +564,8 @@ footer {
 
 .category-filter.active,
 .day-filter.active,
-.time-filter.active {
+.time-filter.active,
+.difficulty-filter.active {
   background-color: var(--primary);
   color: white;
   border-color: var(--primary-dark);
@@ -570,7 +573,8 @@ footer {
 
 .category-filter:hover,
 .day-filter:hover,
-.time-filter:hover {
+.time-filter:hover,
+.difficulty-filter:hover {
   background-color: var(--primary-light);
   color: white;
 }
@@ -619,6 +623,9 @@ footer {
   position: absolute;
   top: 10px;
   right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 #user-status {
@@ -748,4 +755,47 @@ footer {
 
 .share-copy:hover {
   background-color: var(--border);
+}
+
+/* Dark mode styles */
+body.dark-mode {
+  --background: #121212;
+  --surface: #1e1e1e;
+  --text-primary: #e0e0e0;
+  --text-secondary: #aaaaaa;
+  --border: #333333;
+  --border-light: #2a2a2a;
+  --border-focus: #444444;
+  --success-light: #1b3a1c;
+  --warning-light: #3a2e00;
+  --error-light: #3a1010;
+  --info-light: #0a2a30;
+}
+
+body.dark-mode .search-box input {
+  background-color: var(--surface);
+  color: var(--text-primary);
+}
+
+body.dark-mode .activity-tag {
+  background: #2a2e5e !important;
+  color: #9fa8da !important;
+}
+
+body.dark-mode .modal-content {
+  background-color: var(--surface);
+  color: var(--text-primary);
+}
+
+body.dark-mode input,
+body.dark-mode select {
+  background-color: #2a2a2a;
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+/* Dark mode toggle button */
+#dark-mode-toggle {
+  padding: 4px 10px;
+  font-size: 1rem;
 }

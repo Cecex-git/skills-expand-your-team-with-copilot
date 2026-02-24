@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const categoryFilters = document.querySelectorAll(".category-filter");
   const dayFilters = document.querySelectorAll(".day-filter");
   const timeFilters = document.querySelectorAll(".time-filter");
+  const difficultyFilters = document.querySelectorAll(".difficulty-filter");
 
   // Authentication elements
   const loginButton = document.getElementById("login-button");
@@ -24,6 +25,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("login-form");
   const closeLoginModal = document.querySelector(".close-login-modal");
   const loginMessage = document.getElementById("login-message");
+
+  // Dark mode elements
+  const darkModeToggle = document.getElementById("dark-mode-toggle");
+  const darkModeIcon = document.getElementById("dark-mode-icon");
+
+  // Initialize dark mode from localStorage
+  function initDarkMode() {
+    if (localStorage.getItem("darkMode") === "enabled") {
+      document.body.classList.add("dark-mode");
+      darkModeIcon.textContent = "☀️";
+    }
+  }
+
+  // Toggle dark mode
+  darkModeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    const isDark = document.body.classList.contains("dark-mode");
+    darkModeIcon.textContent = isDark ? "☀️" : "🌙";
+    localStorage.setItem("darkMode", isDark ? "enabled" : "disabled");
+  });
 
   // Activity categories with corresponding colors
   const activityTypes = {
@@ -40,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let searchQuery = "";
   let currentDay = "";
   let currentTimeRange = "";
+  let currentDifficulty = "";
 
   // Authentication state
   let currentUser = null;
@@ -437,6 +459,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
+      // Apply difficulty filter
+      if (currentDifficulty === "") {
+        // "All" means activities for all levels (no difficulty specified)
+        if (details.difficulty) {
+          return;
+        }
+      } else {
+        // Specific difficulty level selected
+        if (details.difficulty !== currentDifficulty) {
+          return;
+        }
+      }
+
       // Apply search filter
       const searchableContent = [
         name.toLowerCase(),
@@ -645,6 +680,19 @@ document.addEventListener("DOMContentLoaded", () => {
       // Update current time filter and fetch activities
       currentTimeRange = button.dataset.time;
       fetchActivities();
+    });
+  });
+
+  // Add event listeners for difficulty filter buttons
+  difficultyFilters.forEach((button) => {
+    button.addEventListener("click", () => {
+      // Update active class
+      difficultyFilters.forEach((btn) => btn.classList.remove("active"));
+      button.classList.add("active");
+
+      // Update current difficulty filter and display filtered activities
+      currentDifficulty = button.dataset.difficulty;
+      displayFilteredActivities();
     });
   });
 
@@ -947,6 +995,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Initialize app
+  initDarkMode();
   checkAuthentication();
   initializeFilters();
   fetchActivities();
